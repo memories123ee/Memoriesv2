@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📔 دفتر الذكريات - محمي</title>
+    
+    <!-- Prevent caching of sensitive content -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Security headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta name="referrer" content="no-referrer">
+    
+    <!-- Prevent indexing -->
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Indie+Flower&family=Patrick+Hand&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+    <!-- ==================== Authentication Screen ==================== -->
+    <div class="lock-screen" id="lockScreen">
+        <div class="auth-card">
+            <div class="lock-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM8.9 6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2H8.9V6z"/>
+                </svg>
+            </div>
+            
+            <h1 class="auth-title" id="authTitle">دفتر الذكريات</h1>
+            <p class="auth-subtitle" id="authSubtitle">أدخل كلمة المرور للمتابعة</p>
+            
+            <!-- Mode Selection (First Time Only) -->
+            <div class="mode-selection" id="modeSelection" style="display: none;">
+                <p style="margin-bottom: 20px; color: #666; font-size: 14px;">
+                    هل تريد:
+                </p>
+                <button type="button" class="mode-btn create-btn" id="createNewBtn">
+                    <span class="mode-icon">🆕</span>
+                    <div>
+                        <strong>إنشاء دفتر جديد</strong>
+                        <small>ابدأ من الصفر بكلمة مرور جديدة</small>
+                    </div>
+                </button>
+                <button type="button" class="mode-btn import-btn" id="importExistingBtn">
+                    <span class="mode-icon">📥</span>
+                    <div>
+                        <strong>استيراد ذكريات موجودة</strong>
+                        <small>أدخل كلمة مرور لمشاهدة ذكريات شخص آخر</small>
+                    </div>
+                </button>
+            </div>
+            
+            <form class="auth-form" id="authForm" style="display: none;">
+                <div class="password-input-group">
+                    <input 
+                        type="password" 
+                        id="passwordInput" 
+                        class="password-input" 
+                        placeholder="كلمة المرور"
+                        autocomplete="off"
+                        required
+                    >
+                    <button type="button" class="toggle-password" id="togglePassword">
+                        <svg viewBox="0 0 24 24" class="eye-open">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Password strength meter (for setup only) -->
+                <div class="password-strength" id="passwordStrength" style="display: none;">
+                    <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                </div>
+                <div class="password-strength-text" id="passwordStrengthText"></div>
+                
+                <button type="submit" class="auth-btn" id="authSubmit">
+                    <span id="authBtnText">دخول</span>
+                </button>
+                
+                <button type="button" class="back-btn" id="backBtn" style="display: none;">
+                    ← رجوع
+                </button>
+                
+                <div id="authMessage"></div>
+            </form>
+            
+            <div class="security-notice" id="securityNotice" style="display: none;">
+                <strong>⚠️ تنبيه أمني:</strong>
+                احفظ كلمة المرور في مكان آمن. إذا فقدتها، لن تتمكن من استرجاع بياناتك!
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== Main Application (Hidden until authenticated) ==================== -->
+    <div id="mainApp" style="display: none;">
+        <!-- Security Menu (Top Right) -->
+        <div class="security-menu">
+            <button class="security-btn change-password-btn" id="changePasswordBtn" title="تغيير كلمة المرور">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M12.65 10C11.7 7.31 8.9 5.5 5.77 6.12c-2.29.46-4.15 2.29-4.63 4.58C.32 14.57 3.26 18 7 18c2.61 0 4.83-1.67 5.65-4H17v2c0 1.1.9 2 2 2s2-.9 2-2v-2c1.1 0 2-.9 2-2s-.9-2-2-2h-8.35zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" fill="white"/>
+                </svg>
+            </button>
+            <button class="security-btn logout-btn" id="logoutBtn" title="تسجيل الخروج">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" fill="white"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- خلفية الطاولة الخشبية -->
+        <div class="wooden-background"></div>
+
+        <!-- الحاوية الرئيسية -->
+        <div class="container">
+            <!-- شريط الأدوات العلوي -->
+            <div class="toolbar">
+                <button class="tool-btn" id="addPageBtn" title="إضافة صفحة جديدة">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+                <button class="tool-btn" id="addImageBtn" title="إضافة صورة للصفحة الحالية">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                </button>
+                <button class="tool-btn" id="exportBtn" title="تصدير المذكرات">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </button>
+                <button class="tool-btn" id="importBtn" title="استيراد مذكرات">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                </button>
+                <input type="file" id="importInput" accept=".json" style="display: none;">
+                <div class="page-counter">
+                    <span id="currentPageNum">1</span> / <span id="totalPagesNum">1</span>
+                </div>
+            </div>
+
+            <!-- الكتاب -->
+            <div class="book-wrapper">
+                <div class="book" id="book">
+                    <!-- الصفحات سيتم إضافتها ديناميكياً -->
+                </div>
+            </div>
+
+            <!-- أزرار التنقل -->
+            <div class="navigation">
+                <button class="nav-btn" id="prevBtn" title="الصفحة السابقة">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+                <button class="nav-btn" id="nextBtn" title="الصفحة التالية">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Logout Options Modal -->
+        <div class="modal" id="logoutModal">
+            <div class="modal-content" style="max-width: 400px;">
+                <div class="modal-header">
+                    <h2 class="modal-title">تسجيل الخروج</h2>
+                    <button class="close-btn" id="closeLogoutModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 20px; text-align: center; color: #666;">
+                        اختر نوع تسجيل الخروج:
+                    </p>
+                    <button type="button" class="mode-btn" id="simpleLogoutBtn">
+                        <span class="mode-icon">🚪</span>
+                        <div>
+                            <strong>تسجيل خروج عادي</strong>
+                            <small>احتفظ بالبيانات وكلمة المرور</small>
+                        </div>
+                    </button>
+                    <button type="button" class="mode-btn" id="fullLogoutBtn" style="margin-top: 10px;">
+                        <span class="mode-icon">🗑️</span>
+                        <div>
+                            <strong>حذف كل شيء</strong>
+                            <small>مسح جميع البيانات وكلمة المرور</small>
+                        </div>
+                    </button>
+                    <button type="button" class="secondary-btn" id="cancelLogoutBtn" style="margin-top: 15px; width: 100%;">
+                        إلغاء
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change Password Modal -->
+        <div class="modal" id="changePasswordModal">
+            <div class="modal-content" style="max-width: 400px;">
+                <div class="modal-header">
+                    <h2 class="modal-title">تغيير كلمة المرور</h2>
+                    <button class="close-btn" id="closeChangePasswordModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <div class="form-group">
+                            <label for="oldPassword">كلمة المرور الحالية:</label>
+                            <input type="password" id="oldPassword" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="newPassword">كلمة المرور الجديدة:</label>
+                            <input type="password" id="newPassword" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirmPassword">تأكيد كلمة المرور:</label>
+                            <input type="password" id="confirmPassword" class="form-input" required>
+                        </div>
+                        
+                        <div class="password-strength" id="changePasswordStrength" style="display: block; margin-top: 10px;">
+                            <div class="password-strength-bar" id="changePasswordStrengthBar"></div>
+                        </div>
+                        <div class="password-strength-text" id="changePasswordStrengthText"></div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-cancel" id="cancelChangePasswordBtn">إلغاء</button>
+                            <button type="submit" class="btn btn-save">حفظ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- نافذة إضافة محتوى -->
+        <div class="modal" id="contentModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>إضافة محتوى</h2>
+                    <button class="close-btn" id="closeModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="entryDate">التاريخ</label>
+                        <input type="date" id="entryDate" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="entryTitle">العنوان</label>
+                        <input type="text" id="entryTitle" class="form-input" placeholder="اكتب عنوان...">
+                    </div>
+                    <div class="form-group">
+                        <label for="entryText">النص</label>
+                        <textarea id="entryText" class="form-textarea" rows="4" placeholder="اكتب ذكرياتك هنا..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>إضافة صور</label>
+                        <p class="helper-text">اضغط على الزر لإضافة صور من جهازك (حتى 4 صور)</p>
+                        <div class="image-upload-area">
+                            <input type="file" id="imageInput" accept="image/*" multiple style="display: none;">
+                            <button class="upload-btn" id="uploadImageBtn">
+                                📷 اختر صور من الجهاز
+                            </button>
+                        </div>
+                        <div id="imagePreview" class="image-preview"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" id="cancelBtn">إلغاء</button>
+                    <button class="btn btn-save" id="saveBtn">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="crypto-utils.js"></script>
+    <script src="script-secure.js"></script>
+</body>
+</html>
+
