@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مذكراتي - My Memory Book</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Indie+Flower&family=Patrick+Hand&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- خلفية الطاولة الخشبية -->
+    <div class="wooden-background"></div>
+
+    <!-- الحاوية الرئيسية -->
+    <div class="container">
+        <!-- شريط الأدوات العلوي -->
+        <div class="toolbar">
+            <button class="tool-btn" id="addPageBtn" title="إضافة صفحة جديدة">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+            <button class="tool-btn" id="addImageBtn" title="إضافة صورة للصفحة الحالية">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+            </button>
+            <button class="tool-btn" id="exportBtn" title="تصدير المذكرات">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            </button>
+            <button class="tool-btn" id="importBtn" title="استيراد مذكرات">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+            </button>
+            <input type="file" id="importInput" accept=".json" style="display: none;">
+            <div class="page-counter">
+                <span id="currentPageNum">1</span> / <span id="totalPagesNum">1</span>
+            </div>
+        </div>
+
+        <!-- الكتاب -->
+        <div class="book-wrapper">
+            <div class="book" id="book">
+                <!-- الصفحات سيتم إضافتها ديناميكياً -->
+            </div>
+        </div>
+
+        <!-- أزرار التنقل -->
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" title="الصفحة السابقة">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+            <button class="nav-btn" id="nextBtn" title="الصفحة التالية">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة محتوى -->
+    <div class="modal" id="contentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>إضافة محتوى</h2>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="entryDate">التاريخ</label>
+                    <input type="date" id="entryDate" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="entryTitle">العنوان</label>
+                    <input type="text" id="entryTitle" class="form-input" placeholder="اكتب عنوان...">
+                </div>
+                <div class="form-group">
+                    <label for="entryText">النص</label>
+                    <textarea id="entryText" class="form-textarea" rows="4" placeholder="اكتب ذكرياتك هنا..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>إضافة صور</label>
+                    <p class="helper-text">اضغط على الزر لإضافة صور من جهازك (حتى 4 صور)</p>
+                    <div class="image-upload-area">
+                        <input type="file" id="imageInput" accept="image/*" multiple style="display: none;">
+                        <button class="upload-btn" id="uploadImageBtn">
+                            📷 اختر صور من الجهاز
+                        </button>
+                    </div>
+                    <div id="imagePreview" class="image-preview"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" id="cancelBtn">إلغاء</button>
+                <button class="btn btn-save" id="saveBtn">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
